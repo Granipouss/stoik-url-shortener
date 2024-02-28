@@ -23,7 +23,7 @@ router.get("/:shortcut", (ctx) => {
   }
 
   try {
-    const url = getUrlForShortcut(shortcut);
+    const url = getUrlForShortcut(shortcut, true);
     ctx.redirect(url);
   } catch (error) {
     console.error(error);

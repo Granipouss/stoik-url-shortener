@@ -2,19 +2,30 @@ let uid = 0;
 
 const getUid = () => `${++uid}`;
 
+type Entry = {
+  shortcut: string; // Primary Key
+  url: string;
+  createdAt: number;
+  hits: number;
+};
+
 // In memory database
-const Data = new Map<string, string>();
+const Data = new Map<string, Entry>();
 
 export const createShortCutForUrl = (url: string) => {
   const shortcut = getUid();
-  Data.set(shortcut, url);
+  Data.set(shortcut, { shortcut, url, createdAt: Date.now(), hits: 0 });
   return shortcut;
 };
 
-export const getUrlForShortcut = (shortcut: string) => {
-  const url = Data.get(shortcut);
-  if (!url) {
+export const getUrlForShortcut = (shortcut: string, hit = false) => {
+  const entry = Data.get(shortcut);
+  if (!entry) {
     throw new Error(`Could not find shortcut ${shortcut}`);
   }
-  return url;
+  if (hit) {
+    console.log(`This is the ${entry.hits + 1}th time ${shortcut} is used.`);
+    Data.set(shortcut, { ...entry, hits: entry.hits + 1 });
+  }
+  return entry.url;
 };
