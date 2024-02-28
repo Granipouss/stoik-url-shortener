@@ -22,6 +22,8 @@ function App() {
 
     if (loading) return;
     setLoading(true);
+    setError("");
+    setShortcut("");
 
     try {
       const response = await shortenUrl(url);
@@ -36,20 +38,54 @@ function App() {
   };
 
   return (
-    <main>
-      <h1>URL shortener</h1>
+    <main className="body px-3 my-6">
+      <h1 className="is-size-1 has-text-centered">URL shortener</h1>
       <form onSubmit={handleSubmit}>
-        <fieldset disabled={loading}>
-          <input name="url" value={url} onChange={handleInput} />
-          <button>Shorten</button>
+        <fieldset className="field has-addons" disabled={loading}>
+          <p className="control is-expanded">
+            <input
+              className="input"
+              type="text"
+              placeholder="https://..."
+              name="url"
+              aria-label="url"
+              value={url}
+              onChange={handleInput}
+            />
+          </p>
+          <p className="control">
+            <button
+              className={"button is-primary" + (loading ? " is-loading" : "")}
+              type="submit"
+              disabled={loading}
+            >
+              Shorten
+            </button>
+          </p>
         </fieldset>
       </form>
 
       {shortcut && (
-        <textarea name="shortcut" readOnly value={shortcut}></textarea>
+        <>
+          <span className="icon is-large">
+            <i className="material-symbols-outlined is-size-2">
+              arrow_downward
+            </i>
+          </span>
+
+          <input
+            className="input"
+            type="text"
+            name="shortcut"
+            aria-label="shortcut"
+            readOnly
+            value={shortcut}
+            onClick={(ev) => (ev.target as HTMLInputElement).select()}
+          />
+        </>
       )}
 
-      {error && <p>{error}</p>}
+      {error && <p className="has-text-danger">{error}</p>}
     </main>
   );
 }

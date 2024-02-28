@@ -1,0 +1,14 @@
+@use "~bulma/bulma.sass";
+
+.body {
+  max-width: 800px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: bulma.$block-spacing;
+
+  & > form {
+    width: 100%;
+  }
+}

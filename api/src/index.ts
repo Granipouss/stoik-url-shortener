@@ -38,7 +38,7 @@ router.post("/shorten", async (ctx) => {
     const url = ctx.request.body.url?.trim();
     if (!url || typeof url !== "string") ctx.throw(400);
     const shortcut = createShortCutForUrl(url);
-    ctx.body = { shortcut };
+    ctx.body = { shortcut: `http://localhost:${process.env.PORT}/${shortcut}` };
     ctx.status = 201;
   } catch (error) {
     ctx.throw(400);
