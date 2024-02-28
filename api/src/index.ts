@@ -31,7 +31,9 @@ router.get("/:shortcut", (ctx) => {
   }
 });
 
-router.post("/shorten", (ctx) => {
+router.post("/shorten", async (ctx) => {
+  // HACK: Simulate lag
+  // await new Promise<void>((resolve) => setTimeout(() => resolve(), 3e3));
   try {
     const url = ctx.request.body.url?.trim();
     if (!url || typeof url !== "string") ctx.throw(400);

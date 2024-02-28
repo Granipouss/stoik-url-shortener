@@ -7,32 +7,42 @@ function App() {
   const [shortcut, setShortcut] = useState("");
   const [error, setError] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     setError("");
     setShortcut("");
     setUrl(event.target.value);
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     if (!url.trim()) return;
-    shortenUrl(url)
-      .then((val) => {
-        setShortcut(val.shortcut);
-      })
-      .catch((err: unknown) => {
-        console.error(err);
-        setError(String(err));
-      });
+
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const response = await shortenUrl(url);
+      setShortcut(response.shortcut);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError(String(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <main>
       <h1>URL shortener</h1>
       <form onSubmit={handleSubmit}>
-        <input name="url" value={url} onChange={handleInput} />
-        <button>Shorten</button>
+        <fieldset disabled={loading}>
+          <input name="url" value={url} onChange={handleInput} />
+          <button>Shorten</button>
+        </fieldset>
       </form>
 
       {shortcut && (
