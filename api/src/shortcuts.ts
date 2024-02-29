@@ -1,6 +1,4 @@
-let uid = 0;
-
-const getUid = () => `${++uid}`;
+import { nanoid } from "nanoid";
 
 type Entry = {
   shortcut: string; // Primary Key
@@ -13,7 +11,7 @@ type Entry = {
 const Data = new Map<string, Entry>();
 
 export const createShortCutForUrl = (url: string) => {
-  const shortcut = getUid();
+  const shortcut = nanoid();
   Data.set(shortcut, { shortcut, url, createdAt: Date.now(), hits: 0 });
   return shortcut;
 };
