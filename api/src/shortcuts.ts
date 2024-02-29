@@ -1,29 +1,35 @@
 import { nanoid } from "nanoid";
 
-type Entry = {
-  shortcut: string; // Primary Key
-  url: string;
-  createdAt: number;
-  hits: number;
-};
+import { PrismaClient } from "@prisma/client";
 
-// In memory database
-const Data = new Map<string, Entry>();
+const prisma = new PrismaClient();
 
-export const createShortCutForUrl = (url: string) => {
+export const createShortCutForUrl = async (url: string) => {
   const shortcut = nanoid();
-  Data.set(shortcut, { shortcut, url, createdAt: Date.now(), hits: 0 });
-  return shortcut;
+
+  const entry = await prisma.shortcut.create({
+    data: { shortcut, url },
+    select: { shortcut: true },
+  });
+
+  return entry.shortcut;
 };
 
-export const getUrlForShortcut = (shortcut: string, hit = false) => {
-  const entry = Data.get(shortcut);
+export const getUrlForShortcut = async (shortcut: string, hit = false) => {
+  const entry = await prisma.shortcut.findFirst({
+    select: { url: true, hits: true },
+    where: { shortcut },
+  });
+
   if (!entry) {
     throw new Error(`Could not find shortcut ${shortcut}`);
   }
   if (hit) {
     console.log(`This is the ${entry.hits + 1}th time ${shortcut} is used.`);
-    Data.set(shortcut, { ...entry, hits: entry.hits + 1 });
+    await prisma.shortcut.update({
+      data: { hits: entry.hits + 1 },
+      where: { shortcut },
+    });
   }
   return entry.url;
 };

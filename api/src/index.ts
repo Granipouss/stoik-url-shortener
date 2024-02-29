@@ -11,7 +11,7 @@ app.use(cors());
 
 const router = new Router();
 
-router.get("/:shortcut", (ctx) => {
+router.get("/:shortcut", async (ctx) => {
   const shortcut = ctx.params.shortcut;
   if (!shortcut) {
     return;
@@ -23,7 +23,7 @@ router.get("/:shortcut", (ctx) => {
   }
 
   try {
-    const url = getUrlForShortcut(shortcut, true);
+    const url = await getUrlForShortcut(shortcut, true);
     ctx.redirect(url);
   } catch (error) {
     console.error(error);
@@ -32,12 +32,10 @@ router.get("/:shortcut", (ctx) => {
 });
 
 router.post("/shorten", async (ctx) => {
-  // HACK: Simulate lag
-  // await new Promise<void>((resolve) => setTimeout(() => resolve(), 3e3));
   try {
     const url = ctx.request.body.url?.trim();
     if (!url || typeof url !== "string") ctx.throw(400);
-    const shortcut = createShortCutForUrl(url);
+    const shortcut = await createShortCutForUrl(url);
     ctx.body = { shortcut: `http://localhost:${process.env.PORT}/${shortcut}` };
     ctx.status = 201;
   } catch (error) {
